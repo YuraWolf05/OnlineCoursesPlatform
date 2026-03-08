@@ -24,4 +24,204 @@ online_courses/
 venv\Scripts\activate   
 cd "B:\Games\OOP\Volchkov\OnlineCoursesPlatform+\online_courses"
       python run.py
+
+
+
+    ---
+config:
+  theme: dark
+  look: neo
+---
+classDiagram
+direction TB
+
+namespace SingletonLikePattern {
+    class FlaskApp {
+        +app: Flask
+    }
+
+    class AppDatabase {
+        +db: SQLAlchemy
+    }
+
+    class AppLoginManager {
+        +login_manager: LoginManager
+        +login_view: string
+    }
+}
+
+namespace ActiveRecordPattern {
+    class User {
+        +id: int
+        +full_name: string
+        +email: string
+        +password_hash: string
+        +created_at: datetime
+        +role: string
+    }
+
+    class Course {
+        +id: int
+        +title: string
+        +description: text
+        +teacher_id: int
+        +created_at: datetime
+        +is_published: bool
+    }
+
+    class Module {
+        +id: int
+        +title: string
+        +course_id: int
+        +order_index: int
+    }
+
+    class Lesson {
+        +id: int
+        +title: string
+        +content: text
+        +module_id: int
+        +order_index: int
+        +duration_minutes: int
+    }
+
+    class Enrollment {
+        +id: int
+        +student_id: int
+        +course_id: int
+        +enrolled_at: datetime
+    }
+
+    class LessonProgress {
+        +id: int
+        +enrollment_id: int
+        +lesson_id: int
+        +is_completed: bool
+        +completed_at: datetime
+    }
+}
+
+namespace GuardPattern {
+    class AuthGuards {
+        +require_teacher()
+        +require_student()
+        +must_own_course(course_id: int) Course
+    }
+}
+
+namespace HelperPattern {
+    class CourseHelpers {
+        +seed_once()
+        +load_user(user_id: int) User
+        +get_course_tree(course_id: int)
+        +ensure_progress_rows(enrollment_id: int, course_id: int)
+        +course_progress(student_id: int, course_id: int) dict
+        +is_course_completed(student_id: int, course_id: int) bool
+    }
+}
+
+namespace MVCPattern {
+    class PublicController {
+        +index()
+        +login()
+        +register()
+        +logout()
+        +dashboard()
+        +course_view(course_id: int)
+    }
+
+    class StudentController {
+        +enroll(course_id: int)
+        +complete_lesson(lesson_id: int)
+        +certificate(course_id: int)
+    }
+
+    class TeacherController {
+        +instructor_new_course()
+        +instructor_edit_course(course_id: int)
+        +instructor_delete_course(course_id: int)
+        +instructor_new_module(course_id: int)
+        +instructor_new_lesson(module_id: int)
+        +instructor_students(course_id: int)
+    }
+
+    class Templates {
+        +index.html
+        +login.html
+        +register.html
+        +dashboard_student.html
+        +dashboard_teacher.html
+        +course.html
+        +certificate.html
+        +instructor_new_course.html
+        +instructor_edit_course.html
+        +instructor_new_module.html
+        +instructor_new_lesson.html
+        +instructor_students.html
+    }
+}
+FlaskApp
+FlaskApp --> AppDatabase
+FlaskApp --> AppLoginManager
+User
+Course
+Module
+Lesson
+Enrollment
+LessonProgress
+AuthGuards
+CourseHelpers
+PublicController
+StudentController
+TeacherController
+Templates
+
+FlaskApp --> AppDatabase
+FlaskApp --> AppLoginManager
+
+AppLoginManager --> User : load_user()
+
+User "1" --> "0..*" Course : teaches
+Course "1" --> "0..*" Module : contains
+Module "1" --> "0..*" Lesson : contains
+User "1" --> "0..*" Enrollment : student
+Course "1" --> "0..*" Enrollment : enrollments
+Enrollment "1" --> "0..*" LessonProgress : progress rows
+Lesson "1" --> "0..*" LessonProgress : tracked lesson
+
+AuthGuards --> User
+AuthGuards --> Course
+
+CourseHelpers --> User
+CourseHelpers --> Course
+CourseHelpers --> Module
+CourseHelpers --> Lesson
+CourseHelpers --> Enrollment
+CourseHelpers --> LessonProgress
+CourseHelpers --> AppDatabase
+
+PublicController --> User
+PublicController --> Course
+PublicController --> Enrollment
+PublicController --> CourseHelpers
+PublicController --> Templates
+
+StudentController --> Course
+StudentController --> Module
+StudentController --> Lesson
+StudentController --> Enrollment
+StudentController --> LessonProgress
+StudentController --> AuthGuards
+StudentController --> CourseHelpers
+StudentController --> Templates
+
+TeacherController --> Course
+TeacherController --> Module
+TeacherController --> Lesson
+TeacherController --> Enrollment
+TeacherController --> LessonProgress
+TeacherController --> AuthGuards
+TeacherController --> CourseHelpers
+TeacherController --> Templates
+
       
