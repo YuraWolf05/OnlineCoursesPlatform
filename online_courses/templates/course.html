@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/course.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="course-head">
+  <div>
+    <h1>{{ course.title }}</h1>
+    <p class="muted">{{ course.description or "" }}</p>
+  </div>
+
+  <div class="course-actions">
+    {% if current_user.is_authenticated and current_user.role == "student" %}
+      {% if not prog.enrolled %}
+        <form method="post" action="{{ url_for('enroll', course_id=course.id) }}">
+          <button class="btn btn-primary" type="submit">Записатися</button>
+        </form>
+      {% else %}
+        <div class="pill">Прогрес: {{ prog.percent }}%</div>
+      {% endif %}
+    {% endif %}
+
+    {% if is_owner_teacher %}
+      <a class="btn" href="{{ url_for('instructor_new_module', course_id=course.id) }}">+ Модуль</a>
+      <a class="btn" href="{{ url_for('instructor_students', course_id=course.id) }}">Студенти</a>
+      <a class="btn" href="{{ url_for('instructor_edit_course', course_id=course.id) }}">Редагувати курс</a>
+    {% endif %}
+  </div>
+</section>
+
+<div class="progress">
+  <div class="bar" style="width: {{ prog.percent }}%"></div>
+</div>
+
+<section class="modules">
+  {% for mod, lessons in tree %}
+    <article class="module">
+      <div class="module-head">
+        <div>
+          <h2>{{ mod.order_index }}. {{ mod.title }}</h2>
+          <div class="muted">{{ lessons|length }} урок(ів)</div>
+        </div>
+
+        {% if is_owner_teacher %}
+          <a class="btn btn-primary" href="{{ url_for('instructor_new_lesson', module_id=mod.id) }}">+ Урок</a>
+        {% endif %}
+      </div>
+
+      <div class="lessons">
+        {% for l in lessons %}
+          <div class="lesson">
+            <div class="lesson-left">
+              <div class="lesson-title">#{{ l.order_index }} · {{ l.title }}</div>
+              <div class="muted">{{ l.duration_minutes }} хв</div>
+            </div>
+
+            <div class="lesson-right">
+              {% if current_user.is_authenticated and current_user.role == "student" and prog.enrolled %}
+                {% if l.id in prog.completed_ids %}
+                  <span class="pill pill-ok">✅ Пройдено</span>
+                {% else %}
+                  <form method="post" action="{{ url_for('complete_lesson', lesson_id=l.id) }}">
+                    <button class="btn btn-primary" type="submit">Пройдено</button>
+                  </form>
+                {% endif %}
+              {% else %}
+                <span class="pill">⏳</span>
+              {% endif %}
+            </div>
+          </div>
+
+          {% if l.content %}
+            <div class="lesson-content">
+              {{ l.content }}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </article>
+  {% endfor %}
+</section>
+{% endblock %}

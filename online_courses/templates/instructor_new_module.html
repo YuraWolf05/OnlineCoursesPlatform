@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/instructor.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Новий модуль</h1>
+  <p class="muted">Курс: <b>{{ course.title }}</b></p>
+
+  <form method="post" class="form">
+    <div class="field">
+      <label>Назва модуля</label>
+      <input name="title" required>
+    </div>
+    <div class="field">
+      <label>Порядок (order_index)</label>
+      <input type="number" name="order_index" value="1" min="1">
+    </div>
+    <button class="btn btn-primary" type="submit">Додати модуль</button>
+  </form>
+</section>
+{% endblock %}

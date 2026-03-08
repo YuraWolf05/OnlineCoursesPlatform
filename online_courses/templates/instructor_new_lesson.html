@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/instructor.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Новий урок</h1>
+  <p class="muted">Курс: <b>{{ course.title }}</b> · Модуль: <b>{{ module.title }}</b></p>
+
+  <form method="post" class="form">
+    <div class="field">
+      <label>Назва уроку</label>
+      <input name="title" required>
+    </div>
+    <div class="field">
+      <label>Текст уроку (content)</label>
+      <textarea name="content" rows="5" placeholder="Короткий опис уроку..."></textarea>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Порядок (order_index)</label>
+        <input type="number" name="order_index" value="1" min="1">
+      </div>
+      <div class="field">
+        <label>Тривалість (minutes)</label>
+        <input type="number" name="duration_minutes" value="10" min="1">
+      </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Додати урок</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="dash-head">
+  <div>
+    <h1>Особистий кабінет · Teacher</h1>
+    <p class="muted">Керування своїми курсами: редагування / видалення</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('instructor_new_course') }}">+ Новий курс</a>
+</section>
+
+<section class="panel">
+  <div class="panel-title">Мої курси</div>
+
+  {% if my_courses|length == 0 %}
+    <div class="empty">Поки немає курсів. Створи перший курс.</div>
+  {% else %}
+    <div class="list">
+      {% for c in my_courses %}
+        <article class="course-row">
+          <div>
+            <div class="course-title">{{ c.title }}</div>
+            <div class="muted">id: {{ c.id }} · {{ "published" if c.is_published else "hidden" }}</div>
+          </div>
+
+          <div class="actions">
+            <a class="btn" href="{{ url_for('course_view', course_id=c.id) }}">Відкрити</a>
+            <a class="btn btn-primary" href="{{ url_for('instructor_edit_course', course_id=c.id) }}">Редагувати</a>
+
+            <form method="post" action="{{ url_for('instructor_delete_course', course_id=c.id) }}"
+                  onsubmit="return confirm('Точно видалити курс? Це видалить модулі/уроки/прогрес.')">
+              <button class="btn btn-danger" type="submit">Видалити</button>
+            </form>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
