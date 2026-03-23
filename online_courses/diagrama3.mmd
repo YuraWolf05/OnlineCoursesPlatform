@@ -1,0 +1,189 @@
+---
+config:
+  theme: dark
+  look: neo
+---
+classDiagram
+direction TB
+
+namespace Architecture {
+    class MVCArchitecture {
+        <<architectural style>>
+    }
+
+    class PublicController {
+        +index()
+        +login()
+        +register()
+        +logout()
+        +dashboard()
+        +course_view(course_id: int)
+    }
+
+    class StudentController {
+        +enroll(course_id: int)
+        +complete_lesson(lesson_id: int)
+        +certificate(course_id: int)
+    }
+
+    class TeacherController {
+        +instructor_new_course()
+        +instructor_edit_course(course_id: int)
+        +instructor_delete_course(course_id: int)
+        +instructor_new_module(course_id: int)
+        +instructor_new_lesson(module_id: int)
+        +instructor_students(course_id: int)
+    }
+
+    class Templates {
+        +index.html
+        +login.html
+        +register.html
+        +dashboard_student.html
+        +dashboard_teacher.html
+        +course.html
+        +certificate.html
+        +instructor_new_course.html
+        +instructor_edit_course.html
+        +instructor_new_module.html
+        +instructor_new_lesson.html
+        +instructor_students.html
+    }
+}
+
+namespace ActiveRecordPattern {
+    class User {
+        +id: int
+        +full_name: string
+        +email: string
+        +password_hash: string
+        +created_at: datetime
+        +role: string
+    }
+
+    class Course {
+        +id: int
+        +title: string
+        +description: text
+        +teacher_id: int
+        +created_at: datetime
+        +is_published: bool
+    }
+
+    class Module {
+        +id: int
+        +title: string
+        +course_id: int
+        +order_index: int
+    }
+
+    class Lesson {
+        +id: int
+        +title: string
+        +content: text
+        +module_id: int
+        +order_index: int
+        +duration_minutes: int
+    }
+
+    class Enrollment {
+        +id: int
+        +student_id: int
+        +course_id: int
+        +enrolled_at: datetime
+    }
+
+    class LessonProgress {
+        +id: int
+        +enrollment_id: int
+        +lesson_id: int
+        +is_completed: bool
+        +completed_at: datetime
+    }
+}
+
+namespace ServiceLayerPattern {
+    class AuthService {
+        +require_teacher()
+        +require_student()
+        +must_own_course(course_id: int) Course
+    }
+
+    class CourseService {
+        +seed_once()
+        +load_user(user_id: int) User
+        +get_course_tree(course_id: int)
+        +ensure_progress_rows(enrollment_id: int, course_id: int)
+        +course_progress(student_id: int, course_id: int) dict
+        +is_course_completed(student_id: int, course_id: int) bool
+    }
+}
+
+namespace RepositoryPattern {
+    class UserRepository {
+        +get_by_id(id: int) User
+        +get_by_email(email: string) User
+        +save(user: User)
+        +delete(user: User)
+    }
+
+    class CourseRepository {
+        +get_by_id(id: int) Course
+        +get_all() list~Course~
+        +get_by_teacher(teacher_id: int) list~Course~
+        +save(course: Course)
+        +delete(course: Course)
+    }
+
+    class EnrollmentRepository {
+        +get_by_student(student_id: int) list~Enrollment~
+        +get_by_course(course_id: int) list~Enrollment~
+        +save(enrollment: Enrollment)
+    }
+
+    class ProgressRepository {
+        +get_by_enrollment(enrollment_id: int) list~LessonProgress~
+        +save(progress: LessonProgress)
+        +mark_completed(lesson_id: int, enrollment_id: int)
+    }
+}
+
+MVCArchitecture --> PublicController
+MVCArchitecture --> StudentController
+MVCArchitecture --> TeacherController
+MVCArchitecture --> Templates
+
+User "1" --> "0..*" Course : teaches
+Course "1" --> "0..*" Module : contains
+Module "1" --> "0..*" Lesson : contains
+User "1" --> "0..*" Enrollment : student
+Course "1" --> "0..*" Enrollment : enrollments
+Enrollment "1" --> "0..*" LessonProgress : progress rows
+Lesson "1" --> "0..*" LessonProgress : tracked lesson
+
+PublicController --> CourseService
+PublicController --> AuthService
+PublicController --> Templates
+
+StudentController --> CourseService
+StudentController --> AuthService
+StudentController --> Templates
+
+TeacherController --> CourseService
+TeacherController --> AuthService
+TeacherController --> Templates
+
+CourseService --> CourseRepository
+CourseService --> EnrollmentRepository
+CourseService --> ProgressRepository
+CourseService --> UserRepository
+
+AuthService --> UserRepository
+AuthService --> CourseRepository
+
+UserRepository --> User
+CourseRepository --> Course
+EnrollmentRepository --> Enrollment
+ProgressRepository --> LessonProgress
+CourseRepository --> Module
+CourseRepository --> Lesson
