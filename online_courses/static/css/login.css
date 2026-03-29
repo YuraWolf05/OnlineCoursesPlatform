@@ -1,0 +1,24 @@
+.auth{
+  min-height: calc(100vh - 160px);
+  display:grid;
+  place-items:center;
+}
+.auth-card{
+  width:100%;
+  max-width:520px;
+  padding:18px;
+  border-radius:18px;
+  background: rgba(15,23,48,.86);
+  border:1px solid rgba(39,50,107,.9);
+}
+.auth-card h1{ margin:0; font-size:26px; }
+.form{ margin-top:12px; display:grid; gap:12px; }
+.field{ display:grid; gap:6px; }
+.hint{ margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+.chip{
+  padding:8px 10px; border-radius:999px;
+  background: rgba(11,16,32,.55);
+  border:1px solid rgba(39,50,107,.85);
+  color: rgba(159,176,224,.95);
+  font-size:12px;
+}

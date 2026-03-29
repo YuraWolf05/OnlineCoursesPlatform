@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/lesson.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="lesson-page">
+  <div class="lesson-header">
+    <h1>{{ lesson.title }}</h1>
+    <p class="muted">
+      Модуль: <b>{{ lesson.module.title }}</b> · Тривалість: <b>{{ lesson.duration_minutes }} хв</b>
+    </p>
+  </div>
+
+  <div class="lesson-content">
+    {{ lesson.content | replace('\n', '<br><br>') | safe }}
+  </div>
+
+  {% if lesson.image_filename %}
+  <div class="lesson-media">
+    <h3>Зображення до уроку</h3>
+    <img
+      src="{{ url_for('static', filename='uploads/' ~ lesson.image_filename) }}"
+      alt="Зображення до уроку"
+      class="lesson-image">
+  </div>
+  {% endif %}
+
+  {% if lesson.video_filename %}
+  <div class="lesson-media">
+    <h3>Відео до уроку</h3>
+    <video controls class="lesson-video">
+      <source src="{{ url_for('static', filename='uploads/' ~ lesson.video_filename) }}" type="video/mp4">
+      Ваш браузер не підтримує відео.
+    </video>
+  </div>
+  {% endif %}
+
+  {% if lesson.video_url %}
+  <div class="lesson-media">
+    <h3>Відео за посиланням</h3>
+    <a href="{{ lesson.video_url }}" target="_blank" class="btn btn-primary">Переглянути відео</a>
+  </div>
+  {% endif %}
+
+  {% if lesson.quiz %}
+  <div class="lesson-quiz">
+    <h2>Тест до уроку</h2>
+
+    <form method="post" action="{{ url_for('submit_lesson_quiz', lesson_id=lesson.id) }}">
+      <p><b>{{ lesson.quiz.question_text }}</b></p>
+
+      {% for answer in lesson.quiz.answers %}
+      <div class="field radio">
+        <label>
+          <input type="radio" name="answer_id" value="{{ answer.id }}" required>
+          {{ answer.answer_text }}
+        </label>
+      </div>
+      {% endfor %}
+
+      <button class="btn btn-primary" type="submit">Відправити відповідь</button>
+    </form>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

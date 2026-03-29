@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/instructor.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Новий урок</h1>
+  <p class="muted">Курс: <b>{{ course.title }}</b> · Модуль: <b>{{ module.title }}</b></p>
+
+  <form method="post" enctype="multipart/form-data" class="form">
+    <div class="field">
+      <label>Назва уроку</label>
+      <input name="title" required>
+    </div>
+
+    <div class="field">
+      <label>Текст уроку</label>
+      <textarea name="content" rows="10"></textarea>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Порядок</label>
+        <input type="number" name="order_index" value="1" min="1">
+      </div>
+
+      <div class="field">
+        <label>Тривалість (хв)</label>
+        <input type="number" name="duration_minutes" value="10" min="1">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Зображення</label>
+      <input type="file" name="image" accept=".png,.jpg,.jpeg,.gif,.webp">
+    </div>
+
+    <div class="field">
+      <label>Відео-файл</label>
+      <input type="file" name="video" accept=".mp4,.webm,.ogg">
+    </div>
+
+    <div class="field">
+      <label>Посилання на відео</label>
+      <input type="url" name="video_url" placeholder="https://www.youtube.com/watch?v=...">
+    </div>
+
+    <hr>
+
+    <div class="quiz-header">
+      <h2>Тест до уроку</h2>
+      <button type="button" class="btn btn-primary" onclick="addQuestionBlock()">+ Додати питання</button>
+    </div>
+
+    <div id="questions-container"></div>
+
+    <button class="btn btn-primary" type="submit">Додати урок</button>
+  </form>
+</section>
+
+<script>
+let questionIndex = 0;
+
+function addQuestionBlock() {
+  questionIndex++;
+
+  const container = document.getElementById("questions-container");
+
+  const block = document.createElement("div");
+  block.className = "quiz-block";
+  block.innerHTML = `
+    <hr>
+    <h3>Питання ${questionIndex}</h3>
+
+    <div class="field">
+      <label>Текст питання</label>
+      <input name="question_text_${questionIndex}" placeholder="Введіть питання">
+    </div>
+
+    <div class="field">
+      <label>Відповідь 1</label>
+      <input name="answer_${questionIndex}_1" placeholder="Варіант відповіді 1">
+    </div>
+
+    <div class="field">
+      <label>Відповідь 2</label>
+      <input name="answer_${questionIndex}_2" placeholder="Варіант відповіді 2">
+    </div>
+
+    <div class="field">
+      <label>Відповідь 3</label>
+      <input name="answer_${questionIndex}_3" placeholder="Варіант відповіді 3">
+    </div>
+
+    <div class="field">
+      <label>Відповідь 4</label>
+      <input name="answer_${questionIndex}_4" placeholder="Варіант відповіді 4">
+    </div>
+
+    <div class="field">
+      <label>Правильна відповідь (1-4)</label>
+      <input type="number" name="correct_answer_${questionIndex}" min="1" max="4">
+    </div>
+  `;
+
+  container.appendChild(block);
+}
+
+// щоб одразу було одне питання
+addQuestionBlock();
+</script>
+{% endblock %}

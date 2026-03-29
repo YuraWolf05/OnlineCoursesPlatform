@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/instructor.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Новий курс</h1>
+  <p class="muted">Створення нового курсу для платформи.</p>
+
+  <form method="post" class="form">
+    <div class="field">
+      <label>Назва курсу</label>
+      <input name="title" required>
+    </div>
+
+    <div class="field">
+      <label>Опис курсу</label>
+      <textarea
+        name="description"
+        rows="6"
+        placeholder="Введіть опис курсу: мета, короткий зміст, для кого він призначений, які знання отримає студент..."></textarea>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Створити курс</button>
+  </form>
+</section>
+{% endblock %}

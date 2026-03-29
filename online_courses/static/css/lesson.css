@@ -1,0 +1,49 @@
+.lesson-page {
+  max-width: 950px;
+  margin: 30px auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.lesson-header h1 {
+  margin-bottom: 10px;
+}
+
+.muted {
+  color: #666;
+}
+
+.lesson-content {
+  margin-top: 24px;
+  font-size: 18px;
+  line-height: 1.8;
+  word-break: break-word;
+}
+
+.lesson-media {
+  margin-top: 30px;
+}
+
+.lesson-image {
+  display: block;
+  max-width: 100%;
+  border-radius: 10px;
+  margin-top: 12px;
+}
+
+.lesson-video {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 12px;
+  border-radius: 10px;
+}
+
+.lesson-quiz {
+  margin-top: 40px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #fafafa;
+}

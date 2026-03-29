@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>Диплом</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/certificate.css') }}">
+</head>
+<body>
+  <div class="certificate">
+    <div class="border">
+      <div class="header">
+        <div class="platform">Online Courses Platform</div>
+        <div class="cert-label">CERTIFICATE OF COMPLETION</div>
+      </div>
+
+      <h1>ДИПЛОМ</h1>
+      <p class="subtitle">про успішне завершення онлайн-курсу</p>
+
+      <p class="presented">Цей диплом видано</p>
+      <h2>{{ student.full_name }}</h2>
+
+      <p class="completed">за успішне проходження курсу</p>
+      <h3>«{{ course.title }}»</h3>
+
+      <div class="info-row">
+        <div class="info-box">
+          <span class="label">Дата видачі</span>
+          <span class="value">{{ issued_at.strftime("%d.%m.%Y") }}</span>
+        </div>
+        <div class="info-box">
+          <span class="label">ID сертифіката</span>
+          <span class="value">{{ certificate_id }}</span>
+        </div>
+      </div>
+
+      <div class="signatures">
+        <div class="sign-block">
+          <div class="line"></div>
+          <div>Викладач</div>
+        </div>
+        <div class="sign-block">
+          <div class="line"></div>
+          <div>Керівник платформи</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

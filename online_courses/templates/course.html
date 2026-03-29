@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/course.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="course-head">
+  <div>
+    <h1>{{ course.title }}</h1>
+    <p class="muted">{{ course.description or "" }}</p>
+  </div>
+
+  <div class="course-actions">
+    {% if current_user.is_authenticated and current_user.role == "student" %}
+    {% if not prog.enrolled %}
+    <form method="post" action="{{ url_for('enroll', course_id=course.id) }}">
+      <button class="btn btn-primary" type="submit">Записатися</button>
+    </form>
+    {% else %}
+    <div class="pill">Прогрес: {{ prog.percent }}%</div>
+    {% endif %}
+    {% endif %}
+
+    {% if is_owner_teacher %}
+    <a class="btn" href="{{ url_for('instructor_new_module', course_id=course.id) }}">+ Модуль</a>
+    <a class="btn" href="{{ url_for('instructor_students', course_id=course.id) }}">Студенти</a>
+    <a class="btn" href="{{ url_for('instructor_edit_course', course_id=course.id) }}">Редагувати курс</a>
+    {% endif %}
+  </div>
+</section>
+
+<div class="progress">
+  <div class="bar" style="width: {{ prog.percent }}%"></div>
+</div>
+
+<section class="modules">
+  {% for mod, lessons in tree %}
+  <article class="module">
+    <div class="module-head">
+      <div>
+        <h2>{{ mod.order_index }}. {{ mod.title }}</h2>
+        <div class="muted">{{ lessons|length }} урок(ів)</div>
+
+        {% if mod.description %}
+        <div class="module-description">
+          {{ mod.description | replace('\n', '<br><br>') | safe }}
+        </div>
+        {% endif %}
+      </div>
+
+      {% if is_owner_teacher %}
+      <a class="btn btn-primary" href="{{ url_for('instructor_new_lesson', module_id=mod.id) }}">+ Урок</a>
+      {% endif %}
+    </div>
+
+    <div class="lessons">
+      {% for l in lessons %}
+      <div class="lesson">
+        <div class="lesson-left">
+          <div class="lesson-title">#{{ l.order_index }} · {{ l.title }}</div>
+          <div class="muted">{{ l.duration_minutes }} хв</div>
+        </div>
+
+        <div class="lesson-right">
+          {% if current_user.is_authenticated and current_user.role == "student" and prog.enrolled %}
+          {% if l.id in prog.completed_ids %}
+          <span class="pill pill-ok"> Пройдено</span>
+          {% else %}
+          {% if l.quiz %}
+          <span class="pill">📘 Потрібно пройти тест</span>
+          {% else %}
+          <form method="post" action="{{ url_for('complete_lesson', lesson_id=l.id) }}">
+            <button class="btn btn-primary" type="submit">Пройдено</button>
+          </form>
+          {% endif %}
+          {% endif %}
+          {% else %}
+          <span class="pill">⏳</span>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if l.content %}
+      <div class="lesson-content">
+        {{ l.content | replace('\n', '<br><br>') | safe }}
+      </div>
+      {% endif %}
+
+      {% if l.image_filename %}
+      <div class="lesson-media">
+        <img src="{{ url_for('static', filename='uploads/' ~ l.image_filename) }}" alt="Зображення до уроку"
+          class="lesson-image">
+      </div>
+      {% endif %}
+
+      {% if l.video_filename %}
+      <div class="lesson-media">
+        <video controls class="lesson-video">
+          <source src="{{ url_for('static', filename='uploads/' ~ l.video_filename) }}" type="video/mp4">
+          Ваш браузер не підтримує відео.
+        </video>
+      </div>
+      {% endif %}
+
+      {% if l.video_url %}
+      <div class="lesson-media">
+        {% if "youtube.com/watch?v=" in l.video_url %}
+        {% set video_id = l.video_url.split("watch?v=")[1].split("&")[0] %}
+        <iframe class="lesson-video-embed" src="https://www.youtube.com/embed/{{ video_id }}" title="Відео до уроку"
+          frameborder="0" allowfullscreen>
+        </iframe>
+        {% elif "youtu.be/" in l.video_url %}
+        {% set video_id = l.video_url.split("youtu.be/")[1].split("?")[0] %}
+        <iframe class="lesson-video-embed" src="https://www.youtube.com/embed/{{ video_id }}" title="Відео до уроку"
+          frameborder="0" allowfullscreen>
+        </iframe>
+        {% else %}
+        <a href="{{ l.video_url }}" target="_blank" class="btn btn-primary">▶ Відкрити відео</a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% if l.quiz %}
+      <div class="lesson-quiz">
+        <h3>Тест до уроку</h3>
+
+        {% if current_user.is_authenticated and current_user.role == "student" and prog.enrolled %}
+        {% if l.id in prog.completed_ids %}
+        <div class="pill pill-ok">Тест уже пройдено </div>
+        {% else %}
+        <form method="post" action="{{ url_for('submit_lesson_quiz', lesson_id=l.id) }}">
+          {% for question in l.quiz.questions %}
+          <div class="quiz-question-block">
+            <p class="quiz-question">
+              <b>{{ loop.index }}. {{ question.text }}</b>
+            </p>
+
+            {% for answer in question.options %}
+            <label class="quiz-answer">
+              <input type="radio" name="question_{{ question.id }}" value="{{ answer.id }}" required>
+              <span>{{ answer.text }}</span>
+            </label>
+            {% endfor %}
+          </div>
+          {% endfor %}
+
+          <button class="btn btn-primary" type="submit">Відправити тест</button>
+        </form>
+        {% endif %}
+        {% else %}
+        <div class="muted">Щоб пройти тест, потрібно записатися на курс як студент.</div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% endfor %}
+    </div>
+  </article>
+  {% endfor %}
+</section>
+{% endblock %}

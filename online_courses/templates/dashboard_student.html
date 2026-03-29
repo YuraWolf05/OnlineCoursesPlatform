@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="dash-head">
+  <div>
+    <h1>Особистий кабінет · Student</h1>
+    <p class="muted">Курси в процесі та завершені + диплом</p>
+  </div>
+</section>
+
+<section class="dash-grid">
+  <div class="panel">
+    <div class="panel-title">В процесі</div>
+
+    {% if ongoing|length == 0 %}
+      <div class="empty">Немає курсів “в процесі”. Запишись на курс на головній сторінці.</div>
+    {% else %}
+      {% for x in ongoing %}
+        <article class="course-card">
+          <div>
+            <div class="course-title">{{ x.course.title }}</div>
+            <div class="muted">{{ x.course.description or "" }}</div>
+          </div>
+
+          <div class="row">
+            <div class="meter"><div class="meter-bar" style="width: {{ x.percent }}%"></div></div>
+            <div class="pct">{{ x.percent }}%</div>
+          </div>
+
+          <div class="actions">
+            <a class="btn btn-primary" href="{{ url_for('course_view', course_id=x.course.id) }}">Відкрити</a>
+          </div>
+        </article>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Пройдені</div>
+
+    {% if completed|length == 0 %}
+      <div class="empty">Поки немає завершених курсів (потрібно 100%).</div>
+    {% else %}
+      {% for x in completed %}
+        <article class="course-card done">
+          <div>
+            <div class="course-title">{{ x.course.title }}</div>
+            <div class="muted"> Завершено (100%)</div>
+          </div>
+
+          <div class="actions">
+            <a class="btn" href="{{ url_for('course_view', course_id=x.course.id) }}">Переглянути</a>
+            <a class="btn btn-primary" href="{{ url_for('certificate', course_id=x.course.id) }}">Скачати диплом</a>
+          </div>
+        </article>
+      {% endfor %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

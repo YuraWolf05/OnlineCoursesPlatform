@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/instructor_edit.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <div class="head">
+    <div>
+      <h1>Редагування курсу</h1>
+      <p class="muted">ID: {{ course.id }}</p>
+    </div>
+    <a class="btn" href="{{ url_for('course_view', course_id=course.id) }}">Назад</a>
+  </div>
+
+  <form method="post" class="form">
+    <div class="field">
+      <label>Назва курсу</label>
+      <input name="title" value="{{ course.title }}" required>
+    </div>
+
+    <div class="field">
+      <label>Опис курсу</label>
+      <textarea
+        name="description"
+        rows="8"
+        placeholder="Оновіть опис курсу...">{{ course.description or "" }}</textarea>
+    </div>
+
+    <div class="field check">
+      <input type="checkbox" name="is_published" {% if course.is_published %}checked{% endif %}>
+      <label>Опубліковано (видно студентам)</label>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Зберегти</button>
+  </form>
+</section>
+{% endblock %}

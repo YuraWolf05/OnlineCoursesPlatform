@@ -1,0 +1,242 @@
+---
+config:
+  theme: neo-dark
+  look: neo
+---
+classDiagram
+direction TB
+
+namespace Architecture {
+    class MVCArchitecture {
+        <<architectural style>>
+    }
+
+    class Routes {
+        +index()
+        +login()
+        +register()
+        +logout()
+        +dashboard()
+        +course_view(course_id)
+        +quiz_view(quiz_id)
+        +enroll(course_id)
+        +complete_lesson(lesson_id)
+        +submit_lesson_quiz(lesson_id)
+        +instructor_new_course()
+        +instructor_new_module(course_id)
+        +instructor_new_lesson(module_id)
+        +instructor_edit_course(course_id)
+        +instructor_delete_course(course_id)
+        +instructor_students(course_id)
+        +certificate(course_id)
+    }
+
+    class Templates {
+        +base.html
+        +index.html
+        +login.html
+        +register.html
+        +dashboard_student.html
+        +dashboard_teacher.html
+        +course.html
+        +quiz.html
+        +certificate.html
+        +instructor_new_course.html
+        +instructor_new_module.html
+        +instructor_new_lesson.html
+        +instructor_edit_course.html
+        +instructor_students.html
+    }
+}
+
+namespace SingletonPattern {
+    class CertificateIdGenerator {
+        -_instance
+        +__new__()
+        +generate(course_id, student_id) str
+    }
+}
+
+namespace FactoryMethodPattern {
+    class UserFactory {
+        <<abstract>>
+        +create_user(full_name, email, password)
+    }
+
+    class StudentFactory {
+        +create_user(full_name, email, password)
+    }
+
+    class TeacherFactory {
+        +create_user(full_name, email, password)
+    }
+}
+
+namespace StrategyPattern {
+    class ProgressStrategy {
+        <<abstract>>
+        +calculate(student_id, course_id) dict
+    }
+
+    class SimpleProgressStrategy {
+        +calculate(student_id, course_id) dict
+    }
+
+    class QuizAwareProgressStrategy {
+        +calculate(student_id, course_id) dict
+    }
+}
+
+namespace Models {
+    class User {
+        +id: int
+        +full_name: string
+        +email: string
+        +password_hash: string
+        +created_at: datetime
+        +role: string
+    }
+
+    class Course {
+        +id: int
+        +title: string
+        +description: text
+        +teacher_id: int
+        +created_at: datetime
+        +is_published: bool
+    }
+
+    class Module {
+        +id: int
+        +title: string
+        +description: text
+        +course_id: int
+        +order_index: int
+    }
+
+    class Lesson {
+        +id: int
+        +title: string
+        +content: text
+        +module_id: int
+        +order_index: int
+        +duration_minutes: int
+        +image_filename: string
+        +video_filename: string
+        +video_url: string
+    }
+
+    class Enrollment {
+        +id: int
+        +student_id: int
+        +course_id: int
+        +enrolled_at: datetime
+    }
+
+    class LessonProgress {
+        +id: int
+        +enrollment_id: int
+        +lesson_id: int
+        +is_completed: bool
+        +completed_at: datetime
+    }
+
+    class Quiz {
+        +id: int
+        +title: string
+        +lesson_id: int
+    }
+
+    class Question {
+        +id: int
+        +quiz_id: int
+        +text: text
+    }
+
+    class AnswerOption {
+        +id: int
+        +question_id: int
+        +text: string
+        +is_correct: bool
+    }
+
+    class QuizResult {
+        +id: int
+        +quiz_id: int
+        +student_id: int
+        +score: int
+        +passed: bool
+        +completed_at: datetime
+    }
+}
+
+namespace SupportLogic {
+    class AccessHelpers {
+        +require_teacher()
+        +require_student()
+        +must_own_course(course_id)
+    }
+
+    class CourseHelpers {
+        +seed_once()
+        +get_course_tree(course_id)
+        +ensure_progress_rows(enrollment_id, course_id)
+        +course_progress(student_id, course_id)
+        +is_course_completed(student_id, course_id)
+    }
+}
+
+MVCArchitecture --> Routes
+MVCArchitecture --> Templates
+Routes --> Templates
+
+UserFactory <|-- StudentFactory
+UserFactory <|-- TeacherFactory
+
+ProgressStrategy <|-- SimpleProgressStrategy
+ProgressStrategy <|-- QuizAwareProgressStrategy
+
+Routes --> CertificateIdGenerator : uses
+Routes --> UserFactory : register/seed
+Routes --> ProgressStrategy : progress calculation
+
+CourseHelpers --> ProgressStrategy
+CourseHelpers --> AccessHelpers
+
+StudentFactory --> User : creates
+TeacherFactory --> User : creates
+
+SimpleProgressStrategy --> Enrollment
+SimpleProgressStrategy --> Lesson
+SimpleProgressStrategy --> Module
+SimpleProgressStrategy --> LessonProgress
+
+QuizAwareProgressStrategy --> Enrollment
+QuizAwareProgressStrategy --> Lesson
+QuizAwareProgressStrategy --> Module
+QuizAwareProgressStrategy --> LessonProgress
+QuizAwareProgressStrategy --> Quiz
+
+AccessHelpers --> User
+AccessHelpers --> Course
+
+CourseHelpers --> User
+CourseHelpers --> Course
+CourseHelpers --> Module
+CourseHelpers --> Lesson
+CourseHelpers --> Enrollment
+CourseHelpers --> LessonProgress
+CourseHelpers --> Quiz
+
+User "1" --> "0..*" Course : teaches
+Course "1" --> "0..*" Module : contains
+Module "1" --> "0..*" Lesson : contains
+Lesson "1" --> "0..1" Quiz : has
+Quiz "1" --> "0..*" Question : contains
+Question "1" --> "0..*" AnswerOption : contains
+User "1" --> "0..*" Enrollment : student
+Course "1" --> "0..*" Enrollment : enrollments
+Enrollment "1" --> "0..*" LessonProgress : progress
+Lesson "1" --> "0..*" LessonProgress : tracked
+Quiz "1" --> "0..*" QuizResult : results
+User "1" --> "0..*" QuizResult : passes

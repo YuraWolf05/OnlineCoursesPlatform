@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="auth">
+  <div class="auth-card">
+    <h1>Реєстрація</h1>
+    <p class="muted">Створи акаунт студента або викладача.</p>
+
+    <form method="post" class="form">
+      <div class="field">
+        <label>ПІБ</label>
+        <input name="full_name" placeholder="" required>
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input name="email" placeholder="@Gmail.com" required>
+      </div>
+
+      <div class="field">
+        <label>Пароль</label>
+        <input type="password" name="password" placeholder="мінімум 4 символи" required>
+      </div>
+
+      <div class="field">
+        <label>Роль</label>
+        <select name="role">
+          <option value="student">Студент</option>
+          <option value="teacher">Викладач</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" type="submit">Створити акаунт</button>
+    </form>
+
+  </div>
+</section>
+{% endblock %}

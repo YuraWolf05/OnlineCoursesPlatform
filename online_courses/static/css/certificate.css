@@ -1,0 +1,113 @@
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  font-family: "Times New Roman", serif;
+  background: #f4f1ea;
+}
+
+.certificate {
+  width: 100%;
+  height: 100vh;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.border {
+  border: 12px solid #b08d57;
+  height: calc(100vh - 60px);
+  padding: 40px 60px;
+  box-sizing: border-box;
+  background: white;
+  text-align: center;
+  position: relative;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.platform {
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.cert-label {
+  font-size: 16px;
+  color: #555;
+  margin-top: 8px;
+}
+
+h1 {
+  font-size: 48px;
+  margin: 30px 0 10px;
+  color: #2c2c2c;
+}
+
+.subtitle {
+  font-size: 22px;
+  margin-bottom: 30px;
+}
+
+.presented,
+.completed {
+  font-size: 22px;
+  margin: 20px 0 10px;
+}
+
+h2 {
+  font-size: 42px;
+  margin: 10px 0;
+  color: #1f3b73;
+}
+
+h3 {
+  font-size: 30px;
+  margin: 10px 0 30px;
+  color: #333;
+}
+
+.info-row {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 30px;
+}
+
+.info-box {
+  min-width: 220px;
+}
+
+.label {
+  display: block;
+  font-size: 16px;
+  color: #666;
+}
+
+.value {
+  display: block;
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.signatures {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 80px;
+  padding: 0 80px;
+}
+
+.sign-block {
+  width: 250px;
+  text-align: center;
+}
+
+.line {
+  border-top: 1px solid #000;
+  margin-bottom: 10px;
+}
